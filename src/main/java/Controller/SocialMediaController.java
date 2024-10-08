@@ -1,7 +1,28 @@
 package Controller;
 
+import java.util.Objects;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import Model.Account;
+
+/* endpoints
+GET localhost:8080/accounts/{account_id}/messages...        DAO implemented
+PATCH localhost:8080/messages/{message_id}...               DAO implemented
+DELETE localhost:8080/messages/{message_id}...              DAO implemented 
+GET localhost:8080/messages/{message_id}...                 DAO implemented                    
+GET localhost:8080/messages...                              DAO implemented
+POST localhost:8080/messages...                             DAO implemented
+POST localhost:8080/login...                                DAO implemented
+POST localhost:8080/register...                             DAO implemented
+
+*/
+
+
+
+
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
@@ -17,7 +38,12 @@ public class SocialMediaController {
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         app.get("example-endpoint", this::exampleHandler);
-
+        app.get("/books", this::getAllBooksHandler);
+        app.post("/books", this::postBookHandler);
+        app.get("/accounts/{account_id}/messages", this::getAccountMessagesHandler);
+        app.post("/authors", this::postAuthorHandler);
+        app.get("/books/available", this::getAvailableBooksHandler);
+        //app.start(8080);
         return app;
     }
 
@@ -27,6 +53,16 @@ public class SocialMediaController {
      */
     private void exampleHandler(Context context) {
         context.json("sample text");
+    }
+    private void getAccountMessagesHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        int accNum = Integer.parseInt(Objects.requireNonNull(ctx.pathParam("account_id")));
+        //Author addedAuthor = authorService.addAuthor(author);
+       // if(addedAuthor!=null){
+       //     ctx.json(mapper.writeValueAsString(addedAuthor));
+      //  }else{
+       //     ctx.status(400);
+      //  }
     }
 
 
