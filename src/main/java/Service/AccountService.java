@@ -4,6 +4,7 @@ import DAO.AccountDAO;
 import Model.Account;
 import Model.Message;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AccountService {
@@ -40,8 +41,9 @@ public class AccountService {
     }
 
     public Account loginAccount(Account account) {
-        if(account.getPassword() == AccountDAO.getAccountByUsername(account.getUsername()).getPassword()){
-            return AccountDAO.getAccountByUsername(account.getUsername());
+        Account target = AccountDAO.getAccountByUsername(account.getUsername());
+        if(target != null && account.getPassword().equals(target.getPassword())){
+            return target;
         }
         return null;
     }
@@ -51,6 +53,9 @@ public class AccountService {
     }
 
     public List<Message> getAccountMessages(Account account) {
-        return AccountDAO.getAccountMessages(account);
+        if(account != null){
+            return AccountDAO.getAccountMessages(account);
+        }
+        return new ArrayList<Message>();
     }
 }

@@ -46,9 +46,8 @@ public class MessageDAO {
             
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
-                Message message = new Message(rs.getInt("message_id"), rs.getInt("posted_by"),
-                        rs.getString("message_text"), rs.getLong("time_posted_epoch"));
-                return message;
+                return new Message(rs.getInt("message_id"), rs.getInt("posted_by"),
+                rs.getString("message_text"), rs.getLong("time_posted_epoch"));
             }
         }catch(SQLException e){
             System.out.println(e.getMessage());
@@ -62,22 +61,22 @@ public class MessageDAO {
      * set to auto_increment. Therefore, you only need to insert a record with a single column (name).
      * You only need to change the sql String and leverage PreparedStatements' setString methods.
      */
-    public Message insertMessage(Message Message){
+    public Message insertMessage(Message message){
         Connection connection = ConnectionUtil.getConnection();
         try {
 
-            String sql = "insert into message (posted_by, message_text, time_posted_epoch) values (?,?,?)" ;
+            String sql = "insert into message (posted_by, message_text, time_posted_epoch) values (?, ?, ?)" ;
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            preparedStatement.setInt(1, Message.getPosted_by());
-            preparedStatement.setString(2, Message.getMessage_text());
-            preparedStatement.setLong(3, Message.getTime_posted_epoch());
+            preparedStatement.setInt(1, message.getPosted_by());
+            preparedStatement.setString(2, message.getMessage_text());
+            preparedStatement.setLong(3, message.getTime_posted_epoch());
             
             preparedStatement.executeUpdate();
             ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys();
             if(pkeyResultSet.next()){
                 int generated_Message_id = (int) pkeyResultSet.getLong(1);
-                return getMessageFromId(generated_Message_id);
+                return new Message(generated_Message_id, message.getPosted_by(), message.getMessage_text(), message.getTime_posted_epoch());
             }
 
         }catch(SQLException e){
@@ -96,7 +95,7 @@ public class MessageDAO {
             }
 
             //Write SQL logic here
-            String sql = "delete * from message where message.message_id = ?";
+            String sql = "delete from message where message.message_id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             
             preparedStatement.setInt(1, id);
@@ -113,7 +112,7 @@ public class MessageDAO {
         
         try {
             Message target = getMessageFromId(id);
-            if(target == null || newText == null || newText.length() > 255){
+            if(target == null || newText == "" || newText.length() > 255){
                 return null;
             }
 

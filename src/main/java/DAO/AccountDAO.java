@@ -53,7 +53,7 @@ public class AccountDAO {
 
     public List<Message> getAccountMessages(Account account){
         Connection connection = ConnectionUtil.getConnection();
-        List<Message> Messages = new ArrayList<>();
+        List<Message> Messages = new ArrayList<Message>();
         try {
             //Write SQL logic here
             String sql = "select * from message where posted_by = ?";
@@ -81,8 +81,8 @@ public class AccountDAO {
         Connection connection = ConnectionUtil.getConnection();
         try {
 
-            if(getAccountByUsername(account.getUsername()) == null ||
-            account.getUsername() == null || account.getPassword().length() < 4){
+            if(getAccountByUsername(account.getUsername()) != null ||
+            account.getUsername().equals("")|| account.getPassword().length() < 4){
                 return null;
             }
 

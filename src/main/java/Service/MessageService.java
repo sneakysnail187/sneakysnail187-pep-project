@@ -49,8 +49,7 @@ public class MessageService {
         AccountDAO.getAccountById(Message.getPosted_by()) == null){
             return null;
         }
-        MessageDAO.insertMessage(Message);
-        return Message;
+        return MessageDAO.insertMessage(Message);
     }
     /**
      * TODO: Use the MessageDAO to delete a Message

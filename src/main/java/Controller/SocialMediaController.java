@@ -10,6 +10,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 import Model.Account;
 import Model.Message;
+import Model.Edit;
 import Service.AccountService;
 import Service.MessageService;
 
@@ -56,16 +57,21 @@ public class SocialMediaController {
         return app;
     }
 
-    private void getMessageHandler(Context ctx) {
+    private void getMessageHandler(Context ctx) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
         int m_id = Integer.parseInt(Objects.requireNonNull(ctx.pathParam("message_id")));
         Message fin = messageService.getMessage(m_id);
-        ctx.json(fin);
+        if(fin != null){
+            ctx.json(mapper.writeValueAsString(fin));
+        }else{
+            ctx.status(200);
+        }
     }
     private void editMessageHandler(Context ctx)throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         int m_id = Integer.parseInt(Objects.requireNonNull(ctx.pathParam("message_id")));
-        String message = mapper.readValue(ctx.body(), String.class);
-        Message editedMessage = messageService.editMessage(m_id, message);
+        Edit message = mapper.readValue(ctx.body(), Edit.class);
+        Message editedMessage = messageService.editMessage(m_id, message.getmessage_text());
 
         if(editedMessage!=null){
             ctx.json(mapper.writeValueAsString(editedMessage));
@@ -77,7 +83,11 @@ public class SocialMediaController {
         ObjectMapper mapper = new ObjectMapper();
         int m_id = Integer.parseInt(Objects.requireNonNull(ctx.pathParam("message_id")));
         Message deletedMessage = messageService.deleteMessage(m_id);
-        ctx.json(mapper.writeValueAsString(deletedMessage));
+        if(deletedMessage != null){
+            ctx.json(mapper.writeValueAsString(deletedMessage));
+        }else{
+            ctx.status(200);
+        }
         
     }
     private void loginHandler(Context ctx)throws JsonProcessingException {
@@ -110,7 +120,7 @@ public class SocialMediaController {
             ctx.status(400);
         }
     }
-    private void getAllMessagesHandler(Context ctx) {
+    private void getAllMessagesHandler(Context ctx) throws JsonProcessingException{
         List<Message> messages = messageService.getMessages();
         ctx.json(messages);
     }
